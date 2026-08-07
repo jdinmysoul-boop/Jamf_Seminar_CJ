@@ -787,17 +787,14 @@
 
     fetch(GAS_ENDPOINT_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // GAS CORS preflight 회피용
+      mode: 'no-cors', // GAS 응답의 CORS 헤더 이슈 회피: 응답은 읽지 않고 전송 성공 여부만 확인
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(payload)
     })
-    .then(function(res){ return res.json(); })
-    .then(function(data){
-      if (data && data.result === 'success') {
-        document.getElementById('registerFormView').style.display = 'none';
-        document.getElementById('registerSuccessView').style.display = 'block';
-      } else {
-        throw new Error('submit failed');
-      }
+    .then(function(){
+      // no-cors 모드에서는 응답 내용을 읽을 수 없으므로, 네트워크 에러 없이 요청이 전달된 것을 성공으로 간주
+      document.getElementById('registerFormView').style.display = 'none';
+      document.getElementById('registerSuccessView').style.display = 'block';
     })
     .catch(function(err){
       submitBtn.disabled = false;
